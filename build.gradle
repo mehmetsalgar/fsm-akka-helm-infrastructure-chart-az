@@ -1,0 +1,61 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven { url "https://plugins.gradle.org/m2/"}
+    }
+
+    dependencies {
+        classpath "io.github.mehmetsalgar.gradle-plugins.helm:helm-plugin:1.0.5"
+    }
+}
+
+apply plugin: "io.github.mehmetsalgar.helm"
+
+group 'org.salgar.akka.fsm'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    flag = true
+}
+
+if(ext.flag) {
+    ext.props = [
+            HELM_USER: property('HELM_USER'),
+            HELM_PASSWORD: property('HELM_PASSWORD')
+    ]
+}
+
+helm {
+    charts {
+        infrastructure {
+            chartName = 'fsm-akka-helm-infrastructure-az'
+            chartVersion = "${project.version}"
+            sourceDir = file('helm')
+            filtering {
+                values.put 'appVersion', "${project.version}-${gitBranch()}"
+            }
+        }
+    }
+    repositories {
+        infrastructure_rep {
+            oci 'oci://fsmakka.azurecr.io/helm/'
+            credentials {
+                username = "${props.HELM_USER}"
+                password = "${props.HELM_PASSWORD}"
+            }
+        }
+    }
+}
+
+def gitBranch() {
+    def branch = ""
+    def proc = "git rev-parse --abbrev-ref HEAD".execute()
+    proc.in.eachLine { line -> branch = line }
+    proc.err.eachLine { line -> println line }
+    proc.waitFor()
+    branch
+}
