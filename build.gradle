@@ -32,7 +32,7 @@ if(ext.flag) {
 helm {
     charts {
         infrastructure {
-            chartName = 'fsm-akka-helm-infrastructure-az'
+            chartName = 'fsm-akka-helm-infrastructure-chart-az'
             chartVersion = "${project.version}"
             sourceDir = file('helm')
             filtering {
