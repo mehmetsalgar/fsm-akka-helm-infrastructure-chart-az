@@ -1,0 +1,22 @@
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: fsm-akka
+spec:
+  cassandra:
+    serverVersion: "4.0.1"
+    datacenters:
+      - metadata:
+          name: {{ .Values.cassandra.datacenter.name }}
+        size: {{ .Values.cassandra.datacenter.size }}
+        storageConfig:
+          cassandraDataVolumeClaimSpec:
+            storageClassName: standard
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 5Gi
+        config:
+          jvmOptions:
+            heap_initial_size: 512M
