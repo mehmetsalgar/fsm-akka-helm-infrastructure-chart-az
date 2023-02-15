@@ -12,7 +12,7 @@ pool:
   vmImage
 
 variables:
-  - group: HELM_VARIABLE
+  - group: HELM_VARIABLES
   - group: DOCKER_VARIABLES
 
 resources:
