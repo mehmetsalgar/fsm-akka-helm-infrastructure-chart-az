@@ -1,0 +1,27 @@
+name: Helm Publish with Reuse
+
+trigger:
+  branches:
+    - development
+pr: none
+
+pool:
+  vmImage
+
+variables:
+  - group: HELM_VARIABLE
+  - group: DOCKER_VARIABLES
+
+resources:
+  repositories:
+    - repository: fsm-akka-azure-pipelines
+      type: github
+      name: mehmetsalgar/fsm-akka-azure-pipelines
+      endpoint: mehmetsalgar
+
+stages:
+  - stage: Build
+    jobs:
+      - template: helm-publish.yml@fsm-akka-azure-pipelines
+        parameters:
+          chartName: 'fsm-akka-helm-infrastructure-chart-az'
