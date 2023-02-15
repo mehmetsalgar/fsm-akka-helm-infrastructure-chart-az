@@ -3,7 +3,10 @@ trigger:
   branches:
     include:
       - development
-pr: none
+      - feature/*
+  paths:
+    exclude:
+      - "azure/**/*.yml"
 
 pool:
   vmImage
