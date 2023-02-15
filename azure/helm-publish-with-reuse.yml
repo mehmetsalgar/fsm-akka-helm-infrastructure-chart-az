@@ -2,7 +2,8 @@ name: Helm Publish with Reuse
 
 trigger:
   branches:
-    - development
+    include:
+      - development
 pr: none
 
 pool:
