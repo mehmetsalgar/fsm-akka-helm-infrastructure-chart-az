@@ -1,5 +1,4 @@
 name: Helm Publish with Reuse
-
 trigger:
   branches:
     include:
