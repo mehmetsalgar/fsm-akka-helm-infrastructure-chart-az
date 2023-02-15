@@ -1,0 +1,53 @@
+name: Build Infrastructure for Environment
+
+trigger: none
+
+parameters:
+    - name: branchName
+      type: string
+    - name: valueFile
+      type: string
+
+pool:
+  vmImage
+
+stages:
+  - stage: Build
+    jobs:
+      - job: CalculateVersion
+        displayName: Calculate Version
+        pool:
+            vmImage: ubuntu-latest
+        steps:
+          - checkout: self
+            fetchDepth: 0
+            fetchTags: true
+          - task: gitversion/setup@0
+            displayName: Install GitVersion
+            inputs:
+              versionSpec: "5.x"
+          - task: gitversion/execute@0
+            name: calculateVersion
+            displayName: Calculating version
+            inputs:
+              useConfigFile: True
+              configFilePath: "GitVersion.yml"
+      - job: BuildEnvironmentForBranch
+        displayName: Build Environment for Branch
+        dependsOn:
+          - CalculateVersion
+        variables:
+          version: $[dependencies.CalculateVersion.outputs['calculateVersion.GitVersion.SemVer']]
+        steps:
+          - pwsh: |
+              $namespace = $env:BRANCH_NAME.replace('/', '-').replace('.', '-')
+              Write-Host "Namespace: $namespace"
+              Write-Host "Command: helm upgrade --install fsm-akka-infrastructure -n $namespace -f $env:VALUE_FILE.yaml --create-namespace --version=$env:VERSION"
+              helm upgrade --install fsm-akka-infrastructure -n $namespace -f $env:VALUE_FILE.yaml --create-namespace --version=$env:VERSION
+            displayName: Helm Install
+            env:
+              BRANCH_NAME: ${{ parameters.branchName }}
+              VALUE_FILE: ${{ parameters.valueFile }}
+              VERSION: $(version)
+
+
