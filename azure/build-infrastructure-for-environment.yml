@@ -9,7 +9,11 @@ parameters:
       type: string
 
 pool:
-  vmImage
+  vmImage: ubuntu-latest
+
+variables:
+- group: HELM_VARIABLES
+- group: DOCKER_VARIABLES
 
 stages:
   - stage: Build
@@ -42,6 +46,7 @@ stages:
           - pwsh: |
               $namespace = $env:BRANCH_NAME.replace('/', '-').replace('.', '-')
               Write-Host "Namespace: $namespace"
+              helm registry login fsmakka.azurecr.io --username $(HELM_USER) --password $(HELM_PASSWORD)              
               Write-Host "Command: helm upgrade --install fsm-akka-infrastructure -n $namespace -f $env:VALUE_FILE.yaml --create-namespace --version=$env:VERSION"
               helm upgrade --install fsm-akka-infrastructure -n $namespace -f $env:VALUE_FILE.yaml --create-namespace --version=$env:VERSION
             displayName: Helm Install
