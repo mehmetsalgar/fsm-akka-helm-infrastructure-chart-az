@@ -47,8 +47,8 @@ stages:
               $namespace = $env:BRANCH_NAME.replace('/', '-').replace('.', '-')
               Write-Host "Namespace: $namespace"
               helm registry login fsmakka.azurecr.io --username $(HELM_USER) --password $(HELM_PASSWORD)              
-              Write-Host "Command: helm upgrade --install fsm-akka-infrastructure -n $namespace -f $env:VALUE_FILE.yaml --create-namespace --version=$env:VERSION"
-              helm upgrade --install fsm-akka-infrastructure -n $namespace -f $env:VALUE_FILE.yaml --create-namespace --version=$env:VERSION
+              Write-Host "Command: helm upgrade --install fsm-akka-infrastructure fsm-akka-helm-infrastructure-chart-az -n $namespace -f $env:VALUE_FILE.yaml --create-namespace --version=$env:VERSION"
+              helm upgrade --install fsm-akka-infrastructure fsm-akka-helm-infrastructure-chart-az -n $namespace -f $env:VALUE_FILE.yaml --create-namespace --version=$env:VERSION
             displayName: Helm Install
             env:
               BRANCH_NAME: ${{ parameters.branchName }}
