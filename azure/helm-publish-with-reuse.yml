@@ -9,7 +9,7 @@ trigger:
       - "azure/**/*.yml"
 
 pool:
-  vmImage
+  vmImage: ubuntu-latest
 
 variables:
   - group: HELM_VARIABLES
